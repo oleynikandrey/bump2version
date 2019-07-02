@@ -46,6 +46,7 @@ DESCRIPTION = "{}: v{} (using Python v{})".format(
 VCS = [Git, Mercurial]
 
 
+logging.basicConfig(format="%(message)s")
 logger_list = logging.getLogger("bumpversion.list")
 logger = logging.getLogger(__name__)
 time_context = {"now": datetime.now(), "utcnow": datetime.utcnow()}
@@ -114,6 +115,7 @@ def main(original_args=None):
 
     parser1.add_argument(
         "--verbose",
+        "-v",
         action="count",
         default=0,
         help="Print verbose logging to stderr",
@@ -302,6 +304,10 @@ def main(original_args=None):
 
                 if "replace" not in section_config:
                     section_config["replace"] = defaults.get("replace", "{new_version}")
+
+                # allow new line character in `search` and `replace` options
+                for option in ["search", "replace"]:
+                    section_config[option] = section_config[option].replace("\\n", "\n")
 
                 files.append(ConfiguredFile(filename, VersionConfig(**section_config)))
 
